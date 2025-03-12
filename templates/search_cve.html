@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cứu CVE</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url("{{ url_for('static', filename='img/ĐẠI HỘI.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1d2e94;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            
+        }
+        .header img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .menu a {
+            color: #1d2e94;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background: #2a3dbb;
+            color: #fff;
+        }
+        .content {
+            text-align: justify; /* Căn trái thay vì căn giữa */
+            padding: 10px 20px;
+            max-width: 1000px; /* Giới hạn chiều rộng */
+            margin: 0 auto; /* Căn giữa theo chiều ngang */
+        }        
+        .content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            display: flex;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            border-radius: 0 20px 20px 0;
+            border: 1px solid #ccc;
+            background-color: #1d2e94;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .function-display {
+            width: 800px; /* Kích thước cố định ban đầu */
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            color: #000;
+            text-align: justify; /* Căn đều nội dung */
+            text-justify: inter-word; /* Căn đều theo khoảng cách từ */
+            margin: auto;
+            transition: width 0.3s ease; /* Hiệu ứng mượt mà */
+        }               
+
+        .footer {
+            background: #1d2e94;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+
+        }
+        .table-container {
+            max-height: 390px; /* Chiều cao tối đa của bảng */
+            overflow-y: auto; /* Tạo thanh cuộn dọc */
+            overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+            border: 1px solid #ddd; /* Viền bảng */
+            position: relative;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #1d2e94;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <img src="{{ url_for('static', filename='img/LOGO HỌC VIỆN.png') }}" alt="Logo">
+            <h1>C500 Vulnerability Security</h1>
+        </div>
+        <div class="menu">
+            <a href="{{ url_for('index') }}">Trang chủ</a>
+            <a href="{{ url_for('export_to_excel') }}">Xuất file</a>
+            <a href="{{ url_for('history_page') }}">Lịch sử quét</a>
+            <a href="#">Cập Nhật</a>
+            <a href="{{ url_for('search_cve_page') }}">Hỗ Trợ</a>
+        </div>
+    </div>
+    <div class="content">
+        <h2 style ="text-align: center">Tra cứu CVE</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm CVE...">
+            <button onclick="searchCVE()">Tìm kiếm</button>
+        </div>
+        <div class="function-display" id="resultContainer">
+            <p id="statusMessage">Nhập CVE ID để tìm kiếm.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 PHÁT TRIỂN BỞI ĐỘI NGŨ SINH VIÊN NGHIÊN CỨU KHOA HỌC HỌC VIỆN AN NINH NHÂN DÂN</p>
+    </div>
+    <script>
+        function adjustResultContainer(hasResult) {
+            let container = document.getElementById("resultContainer");
+            if (hasResult) {
+                container.style.width = "auto";  // Co giãn theo nội dung
+                container.style.maxWidth = "1000px"; // Giới hạn tối đa
+            } else {
+                container.style.width = "1000px"; // Kích thước cố định ban đầu
+            }
+        }
+        
+        function searchCVE() {
+            let searchInput = document.getElementById("searchInput").value.trim();
+            let resultContainer = document.getElementById("resultContainer");
+        
+            if (!searchInput) {
+                resultContainer.innerHTML = "<p style='color: red;'>Vui lòng nhập CVE ID!</p>";
+                adjustResultContainer(false);
+                return;
+            }
+        
+            resultContainer.innerHTML = "<p>Đang tìm kiếm...</p>";
+            adjustResultContainer(true);
+        
+            fetch(`/search_cve/${searchInput}`)
+                .then(response => response.json())
+                .then(data => {
+                    let resultHTML = `
+                        <h3 style="text-align: center;">${data.cve_id}</h3>
+                        <p><strong>Mô tả:</strong> ${data.description}</p>
+                        <p><strong>Mức độ nghiêm trọng:</strong> ${data.severity}</p>
+                        <p><strong>Điểm CVSS:</strong> ${data.base_score}</p>
+                        <p><strong>Vector tấn công:</strong> ${data.attack_vector}</p>
+                        <p><strong>Quyền yêu cầu:</strong> ${data.privileges_required}</p>
+                        <p><strong>Tương tác người dùng:</strong> ${data.user_interaction}</p>
+                        <p><strong>Tham khảo:</strong> ${data.references}</p>
+                    `;
+                    resultContainer.innerHTML = resultHTML;
+                    adjustResultContainer(true);
+                })
+                .catch(error => {
+                    resultContainer.innerHTML = `<p style='color: red;'>Lỗi: ${error.message}</p>`;
+                    adjustResultContainer(true);
+                });
+        }                
+    </script>
+</body>
+</html>

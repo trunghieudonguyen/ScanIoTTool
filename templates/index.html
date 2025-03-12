@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url("{{ url_for('static', filename='img/ĐẠI HỘI.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1d2e94;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            
+        }
+        .header img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .menu a {
+            color: #1d2e94;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background: #2a3dbb;
+            color: #fff;
+        }
+        .content {
+            text-align: center;
+            padding: 10px 20px;
+        }
+        .content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+        }
+        .function-display {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 390px;
+            color: #000;
+        }
+        .footer {
+            background: #1d2e94;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+
+        }
+        .table-container {
+            max-height: 390px; /* Chiều cao tối đa của bảng */
+            overflow-y: auto; /* Tạo thanh cuộn dọc */
+            overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+            border: 1px solid #ddd; /* Viền bảng */
+            position: relative;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #1d2e94;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Cửa số thông báo */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            width: 0%;
+            height: 100%;
+            background-color: #1d2e94;
+            border-radius: 10px;
+            transition: width 0.3s ease-in-out;
+        }  
+        
+       
+        .check-security-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .check-security-btn:hover {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .check-security-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        /* Spinner quay vòng */
+
+        .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #1d2e94;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Hiệu ứng quay */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Nâng cấp modal */
+        .modal-content h2 {
+            color: #1d2e94;
+            margin-bottom: 10px;
+        }
+
+        #scanStatus {
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        #scanDetails {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Modal Thông Tin Bảo Mật */
+        .modal {
+            display: none; /* Mặc định ẩn */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Nội dung Modal */
+        .modal-content {
+            color: #ecf0f1;      /* Chữ sáng */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 400px;
+            color: #000; /* Đặt màu chữ rõ nét */
+            opacity: 1; /* Đảm bảo độ trong suốt = 1 */
+            filter: none; /* Xóa các hiệu ứng làm mờ */
+        }
+        .highlight {
+            color: red;
+            font-weight: bold;
+            background-color: #ffe6e6;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <img src="{{ url_for('static', filename='img/LOGO HỌC VIỆN.png') }}" alt="Logo">
+            <h1>C500 Vulnerability Security</h1>
+        </div>
+        <div class="menu">
+            <a href="#" onclick="startScan()">Quét Mạng</a>
+            <a href="{{ url_for('export_to_excel') }}">Xuất file</a>
+            <a href="{{ url_for('history_page') }}">Lịch sử quét</a>
+            <a href="#">Cập Nhật</a>
+            <a href="{{ url_for('search_cve_page') }}">Hỗ Trợ</a>
+        </div>
+    </div>
+    <div class="content">
+        <h2>C500 Vulnerability Security</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm thiết bị..." onkeyup="searchDevices()">
+        </div>
+        <div class="function-display">
+            <div class="table-container">
+                <table id="devicesTable">
+                    <thead>
+                        <tr>
+                            <th>IP</th>
+                            <th>MAC</th>
+                            <th>Tên thiết bị</th>
+                            <th>Cổng</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <p id="statusMessage"></p>
+        </div>
+    </div>
+
+    <div id="scanModal" class="modal">
+        <div class="modal-content">
+            <h2>Đang quét mạng...</h2>
+            <!-- Spinner hiệu ứng quay -->
+            <div class="spinner" style="margin: 20px auto;"></div>
+            
+            <!-- Thanh tiến trình -->
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            
+            <!-- Văn bản mô tả tiến trình -->
+            <p id="scanStatus">Bắt đầu quét mạng...</p>
+            <p id="scanDetails" style="font-size: 14px; color: #666;"></p>
+        </div>
+    </div>
+
+    <!-- Modal Thông Tin Bảo Mật -->
+    <div id="securityModal" class="modal">
+        <div class="modal-content">
+            <h2>Thông Tin Bảo Mật</h2>
+            <div id="securityInfo" style="text-align: left; max-height: 300px; overflow-y: auto;">
+                <!-- Thông tin bảo mật sẽ được hiển thị ở đây -->
+            </div>
+            <button onclick="closeSecurityModal()" style="margin-top: 15px; padding: 8px 16px; background-color: #1d2e94; color: white; border: none; border-radius: 5px; cursor: pointer;">Đóng</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 PHÁT TRIỂN BỞI ĐỘI NGŨ SINH VIÊN NGHIÊN CỨU KHOA HỌC HỌC VIỆN AN NINH NHÂN DÂN</p>
+    </div>
+    <script>
+        async function startScan() {
+            let modal = document.getElementById('scanModal');
+            let scanStatus = document.getElementById('scanStatus');
+            let scanDetails = document.getElementById('scanDetails');
+            let progress = document.querySelector('.progress');
+        
+            // Hiển thị modal
+            modal.style.display = 'flex';
+            scanStatus.innerText = "Bắt đầu quét mạng...";
+            scanDetails.innerText = "Đang chuẩn bị...";
+            progress.style.width = "0%";
+        
+            // Danh sách trạng thái ngẫu nhiên
+            const scanMessages = [
+                "Đang tìm kiếm thiết bị...",
+                "Kiểm tra cổng mở...",
+                "Xác định địa chỉ IP...",
+                "Phân tích dữ liệu mạng...",
+                "Đang quét các cổng phổ biến...",
+                "Thu thập thông tin MAC Address...",
+                "Kiểm tra bảo mật thiết bị..."
+            ];
+        
+            let currentWidth = 0;
+            let messageIndex = 0;
+        
+            // Cập nhật tiến trình và trạng thái mỗi 500ms
+            let interval = setInterval(() => {
+                if (currentWidth < 90) {
+                    currentWidth += 5 + Math.random() * 5;  // Tiến trình tăng ngẫu nhiên
+                    progress.style.width = currentWidth + "%";
+        
+                    // Cập nhật nội dung trạng thái sau mỗi vài giây
+                    if (currentWidth % 15 < 5 && messageIndex < scanMessages.length) {
+                        scanDetails.innerText = scanMessages[messageIndex];
+                        messageIndex++;
+                    }
+                }
+            }, 500);
+        
+            try {
+                // Gọi API quét mạng
+                const response = await fetch('/scan');  
+                const data = await response.json();
+        
+                clearInterval(interval);
+                progress.style.width = "100%";
+                scanDetails.innerText = "Hoàn tất việc quét mạng!";
+        
+                setTimeout(() => {
+                    modal.style.display = 'none'; 
+                }, 1000);
+        
+                if (data.status === 'success') {
+                    scanStatus.innerText = "Hoàn tất!";
+                    populateTable(data.devices);
+                } else {
+                    scanStatus.innerText = "Lỗi: Không tìm thấy thiết bị!";
+                }
+            } catch (error) {
+                clearInterval(interval);
+                progress.style.width = "100%";
+                scanStatus.innerText = "Lỗi khi quét mạng!";
+                scanDetails.innerText = "Vui lòng kiểm tra kết nối và thử lại.";
+        
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 1500);
+            }
+        }          
+
+        function populateTable(devices) {
+            const tbody = document.querySelector('#devicesTable tbody');
+            tbody.innerHTML = '';
+        
+            devices.forEach(device => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${device.ip}</td>
+                    <td>${device.mac}</td>
+                    <td>${device.device_type || 'Không xác định'}</td>
+                    <td>${device.ports || '-'}</td>
+                    <td>${device.status || 'Không rõ'}</td>
+                    <td>
+                        <button class="check-security-btn" onclick="checkSecurity('${device.ip}')">
+                            🔒 Kiểm tra bảo mật
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }        
+
+        async function searchDevices() {
+            const query = document.getElementById('searchInput').value;
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                populateTable(data.devices);
+            }
+        }
+
+        async function checkSecurity(ip) {
+            const securityModal = document.getElementById('securityModal');
+            const securityInfo = document.getElementById('securityInfo');
+        
+            try {
+                const response = await fetch('/check_security', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip })
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+        
+                const data = await response.json();
+                console.log("Raw API Response:", data);
+                if (data.status === 'success') {
+                    console.log("Security Info:", data.security_info);
+                }
+                // Kiểm tra dữ liệu trả về
+        
+                if (data.status === 'success' && data.security_info) {
+                    const security = data.security_info;
+        
+                    const openPorts = security.open_ports && Array.isArray(security.open_ports) && security.open_ports.length > 0 
+                        ? security.open_ports.join(', ') 
+                        : 'Không có';
+        
+                        const vulnerabilities = Array.isArray(security.vulnerabilities) && security.vulnerabilities.length > 0 
+                        ? security.vulnerabilities.map(vuln => `<span class="highlight">${vuln}</span>`).join(', ') 
+                        : 'Không có';                    
+        
+                    const status = security.status && security.status !== 'undefined' ? security.status : 'Không xác định';
+                    const os = security.os && security.os !== 'undefined' ? security.os : 'Không xác định';
+        
+                    const infoHTML = `
+                        <p><strong>IP Thiết Bị:</strong> ${security.ip}</p>
+                        <p><strong>MAC Address:</strong> ${security.mac}</p>
+                        <p><strong>Hệ Điều Hành:</strong> ${os}</p>
+                        <p><strong>Cổng Mở:</strong> ${openPorts}</p>
+                        <p><strong>Trạng Thái:</strong> ${status}</p>
+                        <p><strong>Lỗ Hổng Phát Hiện:</strong> ${vulnerabilities}</p>
+                    `;
+                    console.log("Final Info HTML:", infoHTML);
+                    securityInfo.innerHTML = infoHTML;
+                } else {
+                    securityInfo.innerHTML = `<p class="highlight">Lỗi: Dữ liệu trả về không hợp lệ</p>`;
+                }
+        
+                // Hiển thị modal
+                securityModal.style.display = 'flex';
+            } catch (error) {
+                console.error("Error during security check:", error);
+                securityInfo.innerHTML = `<p class="highlight">Lỗi khi kiểm tra bảo mật: ${error.message}</p>`;
+                securityModal.style.display = 'flex';
+            }
+        }
+    
+        function attachSecurityCheckButtons() {
+            document.querySelectorAll('.check-security-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const ip = this.getAttribute('data-ip');
+                    checkSecurity(ip);
+                });
+            });
+        }
+        
+        document.addEventListener("DOMContentLoaded", attachSecurityCheckButtons);
+    
+        function closeSecurityModal() {
+            document.getElementById('securityModal').style.display = 'none';
+        }        
+
+        // Đảm bảo modal bị ẩn khi trang web vừa mở
+        document.addEventListener("DOMContentLoaded", function () {
+            let modal = document.getElementById("scanModal");
+            modal.style.display = "none"; 
+        });
+
+        function exportExcel() {
+            window.location.href = '/export';
+        }
+    </script>
+</body>
+</html>

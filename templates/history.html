@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử quét</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url("{{ url_for('static', filename='img/ĐẠI HỘI.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1d2e94;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            
+        }
+        .header img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .menu a {
+            color: #1d2e94;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background: #2a3dbb;
+            color: #fff;
+        }
+        .content {
+            text-align: center;
+            padding: 10px 20px;
+        }
+        .content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+        }
+        .function-display {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 390px;
+            color: #000;
+        }
+        .footer {
+            background: #1d2e94;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0; /* Thêm dòng này */
+            width: 100%;
+        }
+        
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+
+        }
+        .table-container {
+            max-height: 390px; /* Giữ kích thước khung bảng */
+            overflow-y: auto; /* Cho phép cuộn dọc */
+            overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #1d2e94;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <img src="{{ url_for('static', filename='img/LOGO HỌC VIỆN.png') }}" alt="Logo">
+            <h1>C500 Vulnerability Security</h1>
+        </div>
+        <div class="menu">
+            <a href="{{ url_for('index') }}">Trang chủ</a>
+            <a href="{{ url_for('export_to_excel') }}">Xuất file</a>
+            <a href="{{ url_for('history_page') }}">Lịch sử quét</a>
+            <a href="#">Cập Nhật</a>
+            <a href="{{ url_for('search_cve_page') }}">Hỗ Trợ</a>
+        </div>
+    </div>
+    <div class="content">
+        <h2 style ="text-align: center">Lịch sử quét</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm thiết bị..." onkeyup="searchDevices()">
+        </div>
+        <div class="function-display">
+            <div class="table-container">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>IP</th>
+                            <th>MAC</th>
+                            <th>Thời gian quét</th>
+                            <th>Số lỗ hổng</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for history in histories %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ history.ip }}</td>
+                            <td>{{ history.mac }}</td>
+                            <td>{{ history.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ history.vulnerability_count }}</td>
+                            <td><a href="/check_security?ip={{ history.ip }}">Xem chi tiết</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>                    
+                </table>
+            </div> 
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 PHÁT TRIỂN BỞI ĐỘI NGŨ SINH VIÊN NGHIÊN CỨU KHOA HỌC HỌC VIỆN AN NINH NHÂN DÂN</p>
+        </div>
+    <script>
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.querySelector("#historyTable tbody");
+            let rows = table.getElementsByTagName("tr");
+    
+            for (let i = 0; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName("td");
+                let match = false;
+                for (let j = 1; j < cells.length; j++) { // Không tìm trong STT
+                    if (cells[j].innerText.toLowerCase().includes(input)) {
+                        match = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = match ? "" : "none";
+            }
+        }
+        document.getElementById("searchInput").addEventListener("keyup", searchTable);
+
+        async function searchDevices() {
+            const query = document.getElementById('searchInput').value;
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                populateTable(data.devices);
+            }
+        }
+    </script>
+</body>
+</html>

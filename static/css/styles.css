@@ -1,0 +1,172 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("{{ url_for('static', filename='img/ĐẠI HỘI.png') }}") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
+.header {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1d2e94;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    
+}
+.header img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+.menu {
+    display: flex;
+    gap: 20px;
+}
+.menu a {
+    color: #1d2e94;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+}
+.menu a:hover {
+    background: #2a3dbb;
+    color: #fff;
+}
+.content {
+    text-align: center;
+    padding: 10px 20px;
+}
+.content h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+.search-bar {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+.search-bar input {
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+}
+.function-display {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 390px;
+    color: #000;
+}
+.footer {
+    background: #1d2e94;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+.footer p {
+    margin: 0;
+    font-size: 14px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+
+}
+.table-container {
+    max-height: 390px; /* Chiều cao tối đa của bảng */
+    overflow-y: auto; /* Tạo thanh cuộn dọc */
+    overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+    border: 1px solid #ddd; /* Viền bảng */
+    position: relative;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+th {
+    background-color: #1d2e94;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background-color: #1d2e94;
+    border-radius: 10px;
+    transition: width 0.3s ease-in-out;
+}  
+
+
+.check-security-btn {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.check-security-btn:hover {
+    background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.check-security-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
